@@ -185,11 +185,9 @@ the tokens. Read the [full benchmark and caveats](evals/benchmark.md), or the
 15. Accountability has exactly one name.
 16. Under pressure: keep the red line, shrink the scope.
 
-## Sources and acknowledgements
+## Further reading
 
-The skill distills field practice from a 31-lesson Chinese-language video course on enterprise AI
-product management and forward-deployed engineering (published on Bilibili). It is cross-checked
-and extended with public guidance:
+The skill's guidance is consistent with, and links to, these public sources:
 - Anthropic's [*Building effective agents*](https://www.anthropic.com/engineering/building-effective-agents) and [*Demystifying evals for AI agents*](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)
 - OpenAI's [*A practical guide to building agents*](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf)
 - Google [PAIR's People + AI Guidebook](https://pair.withgoogle.com/guidebook/)
