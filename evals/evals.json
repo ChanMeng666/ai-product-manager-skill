@@ -1,0 +1,66 @@
+{
+  "skill_name": "ai-product-manager",
+  "evals": [
+    {
+      "id": 1,
+      "name": "bank-agent-kickoff",
+      "prompt": "I'm the PM at a software vendor. Tomorrow I have a kickoff with a regional bank's customer-service center. Their head of operations told sales: 'We want an AI agent that handles customer complaints end to end — reads the complaint, investigates the account, decides compensation, and replies to the customer automatically. Budget is about $2M, we want it live in 3 months.' Sales already said 'sounds doable'. Help me prepare for tomorrow: what should I ask, what should I propose, and what should I absolutely avoid?",
+      "expected_output": "A kickoff prep that reframes the solution-shaped request into a problem, prescribes motive/pain/worst-case questions and a baseline, keeps compensation decisions and outbound replies out of autonomous scope, proposes one vertical slice with exit criteria, and warns against inheriting sales' promise.",
+      "files": [],
+      "assertions": [
+        "Treats 'an end-to-end agent' as the client's proposed solution and steers the meeting toward the underlying problem (motive / where it hurts / worst case or equivalent)",
+        "Asks for or plans to measure a quantitative baseline (e.g., complaint volume, handling time, cost or error rate today) before designing",
+        "Keeps autonomous compensation decisions and/or auto-sending replies to customers out of the first release (non-goal or human-approved only)",
+        "Recommends something simpler than a fully autonomous agent for at least part of the flow (rules/workflow/RAG/copilot with human approval)",
+        "Proposes a narrow first slice (one complaint type / channel) that runs end to end rather than broad coverage",
+        "Defines exit or stop criteria with a metric and a time box for the first phase",
+        "Calls out the risk of sales' 'sounds doable' / 3-month commitment and advises not to confirm scope or accuracy promises at kickoff",
+        "Asks who the single accountable business owner is (a named person) or proposes a RACI with one accountable owner",
+        "Does not expose the skill's internal codes or file names (e.g., pitfall IDs like \"B2\", reference file names, undefined labels like \"L3\") to the user",
+        "Does not present illustrative composite cases as specific real events (only sourced public evidence is cited as fact)",
+        "Names domain-specific practical critical-path items (e.g., specific banking regulations, vendor/third-party-risk or security onboarding lead time)"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "hr-rag-launch",
+      "prompt": "our internal HR policy assistant (RAG over ~1,200 policy docs, built on a hosted LLM) scored 94% accuracy on our 500-question test set. the VP of People wants to roll it out to all 8,000 employees next Monday and engineering says they're confident. I need to write the go/no-go recommendation by Thursday. what should it say?",
+      "expected_output": "A go/no-go recommendation that does not approve a full Monday rollout, interrogates the 94% (source, labeling, worst slice, control group), requires groundedness/refusal and policy versioning, rollback/runbook/owner, and proposes a bounded pilot or canary with pre-written criteria.",
+      "files": [],
+      "assertions": [
+        "Does NOT recommend an unconditional full rollout to all 8,000 employees on Monday; proposes a bounded pilot/canary or conditional go",
+        "Questions where the 500 test questions came from and/or who judged correctness (denominator / labeling independence)",
+        "Requires breaking the 94% down by slice/category/risk and examining the worst slice rather than the average",
+        "Requires citations/source grounding and an 'I don't know'/refusal or human-escalation behavior when no source is found",
+        "Addresses policy document versioning, effective dates, or stale/conflicting documents",
+        "Requires a rollback plan and/or runbook with a named owner or on-call responder",
+        "Distinguishes offline accuracy from real-user adoption/acceptance (UAT or pilot metrics such as edit/abandon/escalation rates)",
+        "Defines explicit go/expand criteria or thresholds written before the pilot (metric + threshold + timeframe)",
+        "Does not expose the skill's internal codes or file names (e.g., pitfall IDs like \"B2\", reference file names, undefined labels like \"L3\") to the user",
+        "Does not present illustrative composite cases as specific real events (only sourced public evidence is cited as fact)",
+        "Addresses capacity at rollout peak (provider rate limits/quotas/latency or load testing) or a staged ramp for load reasons"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "contract-review-rescue",
+      "prompt": "We've been running a 'POC' of an AI contract-review agent for our legal team for 4 months now. The demo to the GC was great. Reality: 10 lawyers have access, about 3 use it weekly. Nobody can tell me the accuracy — lawyers say 'sometimes it's spot on, sometimes it misses things and you can't tell'. Our two engineers tweak prompts directly in production when someone complains. We're 30% over the token budget. The CFO asked me yesterday whether we should keep funding it next quarter. Write me the recommendation I should send.",
+      "expected_output": "A clear, conditional recommendation to the CFO: neither blind continuation nor reflexive kill; make quality measurable first (eval set + gate), freeze prompt hot-edits behind versioning/CI, shrink scope to fix cost/noise, time-boxed with numeric stop conditions, honest maturity grading.",
+      "files": [],
+      "assertions": [
+        "Gives a clear decision (e.g., conditional continue / shrink / stop) rather than an open-ended 'it depends'",
+        "Identifies unmeasurable quality (no eval set / no golden set) as the blocking issue to fix first",
+        "Calls for stopping direct prompt edits in production in favor of versioning plus an eval/regression gate",
+        "Treats the 3-of-10 usage as a trust/adoption signal and proposes behavioral measures (edit, abandonment, acceptance) or root-cause interviews",
+        "Proposes numeric stop/continue criteria with a time box (e.g., N weeks, metric threshold)",
+        "Addresses the 30% cost overrun via scope narrowing, routing, or per-task budgets rather than only 'optimize prompts'",
+        "Honestly grades the project's maturity (e.g., not production-ready; a demo/POC despite 4 months)",
+        "Is written as a sendable message to the CFO in business language (cost, risk, decision) rather than only technical notes",
+        "Does not expose the skill's internal codes or file names (e.g., pitfall IDs like \"B2\", reference file names, undefined labels like \"L3\") to the user",
+        "Does not present illustrative composite cases as specific real events (only sourced public evidence is cited as fact)",
+        "Leads with a sendable message to the CFO before any internal working notes",
+        "Considers build-vs-buy or diagnosing usage/cost logs to explain the overrun"
+      ]
+    }
+  ]
+}

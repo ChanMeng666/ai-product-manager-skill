@@ -1,0 +1,26 @@
+# Continue / Shrink / Stop Memo: <project / phase>
+
+**Decision:** CONTINUE | SHRINK | STOP (this phase)   ·   **Date:** …   ·   **Signed by:** …
+*(Continue: business owner · Shrink: product · Stop: sponsor + business jointly)*
+
+## 1. Pre-written conditions (copied from the charter, not rewritten now)
+| Condition | Threshold | Observation point | Actual | Triggered? |
+|---|---|---|---|---|
+
+## 2. Signals
+- Core metric trend: …
+- Real usage (behavioral, not survey): …
+- Noise or cost out of control? …
+- Root-cause defects (e.g. data that doesn't exist): …
+
+## 3. Reasoning
+- If CONTINUE: what gets pushed to production; what stays OUT (boundary held).
+- If SHRINK: which scope is cut (alerts narrowed, segment reduced); why scope, not model tuning.
+- If STOP: root cause; what we keep (data, integrations, eval set); what must be true to restart.
+
+## 4. The math for leadership
+- Continue <N> more months: cost …, probability of success …
+- Stop now: loss …, assets retained …
+
+## 5. Next action
+… · Owner … · By …

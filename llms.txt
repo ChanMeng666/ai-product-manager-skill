@@ -1,0 +1,28 @@
+# ai-product-manager
+
+> An agent skill that gives anyone the judgment of a senior AI product manager, so enterprise LLM, RAG and agent projects survive past the demo.
+
+This file follows the [llms.txt](https://llmstxt.org/) convention: a concise, machine-readable map
+of the project for large language models and AI agents.
+
+## About
+
+- Repository: https://github.com/ChanMeng666/ai-product-manager-skill
+- Primary content: Markdown agent skill (SKILL.md + references + templates); Node.js validation script
+- License: MIT
+
+## Key documents
+
+- [README](https://github.com/ChanMeng666/ai-product-manager-skill/blob/main/README.md): overview, installation, usage
+- [SKILL.md](https://github.com/ChanMeng666/ai-product-manager-skill/blob/main/skills/ai-product-manager/SKILL.md): the skill entry point (principles, workflow, router, diagnostics)
+- [references/](https://github.com/ChanMeng666/ai-product-manager-skill/tree/main/skills/ai-product-manager/references): discovery, solution selection, scoping, ontology, POC, evaluation, lifecycle, production, risk, cases, pitfalls, evidence
+- [templates/](https://github.com/ChanMeng666/ai-product-manager-skill/tree/main/skills/ai-product-manager/templates): charter, discovery report, PRD, POC plan, eval plan, UAT plan, launch gate, runbook, ADR, allow-list, health check, continue/shrink/stop memo
+- [evals/](https://github.com/ChanMeng666/ai-product-manager-skill/tree/main/evals): benchmark prompts, assertions and results
+- [examples/](https://github.com/ChanMeng666/ai-product-manager-skill/tree/main/examples): full sample answers produced with the skill
+- [AGENTS.md](https://github.com/ChanMeng666/ai-product-manager-skill/blob/main/AGENTS.md): how AI agents should work in this repo
+
+## For agents
+
+To use the skill: install `skills/ai-product-manager/` into your skills directory (or via the Claude
+Code plugin marketplace), then read SKILL.md and follow its router to the relevant reference.
+To change the skill: read AGENTS.md and run `node scripts/validate.mjs`.
