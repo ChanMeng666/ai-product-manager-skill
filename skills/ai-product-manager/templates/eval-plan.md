@@ -24,6 +24,9 @@ Also tagged by risk (read-only vs. write) and segment.
 | Failure mode | Binary check | Automated how (code / LLM judge / human) | Judge validated? (TPR / TNR) |
 |---|---|---|---|
 
+For agents, each case also lists **forbidden events** (skipped approval, write before read, retried send)
+and the starting permissions; include false-success cases.
+
 ## 4. Threshold cards (written before running)
 | Metric | Slice | Min sample | Pass line | Signer | Who may relax |
 |---|---|---|---|---|---|

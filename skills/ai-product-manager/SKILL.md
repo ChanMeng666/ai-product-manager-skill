@@ -1,16 +1,16 @@
 ---
 name: ai-product-manager
 description: >-
-  Think and act like a senior AI product manager / forward-deployed engineer who has shipped
-  enterprise LLM, RAG and agent projects, and steer clear of the pitfalls that kill most AI
-  projects after the demo. Use this skill whenever someone is scoping, pitching, building,
-  evaluating, launching or rescuing an AI product or AI feature: a client says "we want an
-  agent", choosing between rules, workflow, RAG or an agent, writing an AI PRD or project charter,
-  planning a POC or pilot, defining evals or acceptance criteria, asking "accuracy is 95%, can we
-  launch?", designing guardrails or human-in-the-loop, preparing a launch, rollback or runbook, or
-  deciding whether to continue, shrink or kill a project. Also use it for AI PM career questions
-  (AI PM vs FDE vs engineer) and AI project health checks, even when the user never says "product
-  manager". Works in any language (e.g. AI产品经理, 智能体项目, 需求评审, POC, 上线).
+  Think and act like a senior AI product manager, forward-deployed engineer and agent architect
+  who has shipped enterprise LLM, RAG and agent systems past the demo. Use whenever someone
+  scopes, pitches, designs, builds, evaluates, launches or rescues an AI product or agent: "we
+  want an agent"; rules vs workflow vs RAG vs agent; an AI PRD or charter; a POC or pilot; evals
+  or "95% accurate, can we launch?"; agent architecture (agent loop, subagents, tool and MCP
+  design, hooks, context, structured output); debugging a misbehaving agent; building on the
+  Claude API, Agent SDK or Claude Code; guardrails, human-in-the-loop, launch, rollback or
+  runbooks; continue, shrink or kill decisions. Also for AI PM career questions and AI project
+  health checks, even when nobody says "product manager". Works in any language (e.g. AI产品经理,
+  智能体架构, 需求评审, POC, 上线).
 ---
 
 # AI Product Manager
@@ -67,7 +67,8 @@ status. Each one exists because skipping it has burned real teams.
    model quality, system reliability, user adoption, business value.
 10. **Safety comes from not having the option, not from reminders.** Prompts are advice, not gates.
     If a write action is in the agent's tool list, it will eventually be called. Use an allow-list
-    of actions.
+    of actions, and enforce every rule that must hold every time in code (a hook, a prerequisite
+    check, a blocking approval), never only in the prompt.
 11. **Write stop conditions before you start.** Once money is spent, sunk cost bends everyone's
     judgment. Rules written in advance are the only thing that holds when emotions peak.
 12. **Never skip a maturity level, and grade by evidence, not by calendar time.** Demo, POC, pilot
@@ -83,6 +84,11 @@ status. Each one exists because skipping it has burned real teams.
     and shrink the scope*: a bounded pilot, a low-risk subset, one more slice instead of eleven. A
     person who only says "no" gets routed around. A person who relaxes a red line into a target
     destroys the whole system.
+17. **An agent is a loop, tools and context, and each is product surface.** Most agent failures
+    trace to a vague tool description, a missing fact in context or an unenforced rule, not to the
+    model. Diagnose from the transcript, then fix at the cheapest layer that reliably works: tool
+    description, then explicit criteria and examples, then context, then a code gate, and only then
+    more agents, routers or a bigger model.
 
 ## How to work with the user
 
@@ -96,6 +102,9 @@ their plan, or an artifact. Use the router below and read only the reference fil
 | Choosing rules / workflow / RAG / agent; designing autonomy and HITL | `references/solution-selection.md` | ADR via `adr.md` |
 | Scoping an MVP, fighting scope creep, slicing | `references/scoping-and-vertical-slice.md` | `prd.md` |
 | Defining concepts, permissions, what the agent may do | `references/ontology-and-guardrails.md` | `action-allowlist.md` |
+| Designing an agent system: loop, single vs. multi-agent, subagents, code gates, context, escalation; reviewing an agent design; debugging a misbehaving agent | `references/agent-architecture.md` | `agent-design-spec.md` |
+| Designing tools, MCP integrations, structured output or validation-retry | `references/tool-design.md` | `tool-spec.md` |
+| Building on Claude (API, Agent SDK, Claude Code, CI) or setting up Claude Code for a team | `references/building-on-claude.md` | `agent-design-spec.md` |
 | Planning or rescuing a POC | `references/poc.md` | `poc-proof-plan.md` |
 | Building evals, asking "is X% accurate enough", planning UAT or a pilot | `references/evaluation.md` | `eval-plan.md`, `uat-plan.md` |
 | Asking which stage they're in or whether to proceed; continue, shrink or stop | `references/lifecycle-and-gates.md` | `project-health-check.md`, `continue-shrink-stop-memo.md` |
@@ -112,7 +121,9 @@ dilutes the answer. Add a reference only when the user's situation actually touc
 example, read the regulated-domain file only if the domain is regulated.
 
 ### Step 2: Get the minimum facts, but don't stall
-If key facts are missing, ask **at most three** sharp questions, chosen from the diagnostics below.
+If the user already gave a lot of context, restate what you inferred in a line or two, then ask
+only for what's missing. If key facts are missing, ask **at most three** sharp questions, chosen
+from the diagnostics below.
 If the user wants speed or can't answer, proceed anyway. Mark each guess as `[ASSUMPTION]` and say
 which answer would change your verdict. An AI PM who blocks on perfect information is as useless as
 one who never asks.
@@ -156,11 +167,29 @@ setup, name the concrete items that usually decide the timeline:
   request type, and past tickets. Diagnose why cost or usage looks the way it does.
 
 ### Step 5: Translate for the audience
-
-### Step 4: Translate for the audience
 Executives want business language: "each planner saves 26 minutes per order," not "recall improved
 by 9 points." Engineers want contracts: input/output, latency, error behavior. When writing for
 either, use their language.
+
+### Step 6: When the user wants it built
+If the user wants the agent designed or coded, not just judged, the same discipline applies at
+build time. Agents fail when they are built demo-first.
+1. **Confirm the step deserves an agent**, using the decision tree. If it doesn't, build the
+   workflow or RAG and say why.
+2. **Write 20 or more eval tasks from real cases before the first prompt,** each with a checkable
+   outcome. Without them, no architecture change can be shown to help.
+3. **Fill the design spec:** exits and budgets, the allow-listed tools with their risk ratings, the
+   invariants enforced in code, the context plan, the error and escalation contract, and how a run
+   verifies itself.
+4. **Build the thinnest end-to-end loop on real data.** Write the gates as code, and give the tools
+   precise descriptions and structured errors.
+5. **Run the evals, read the transcripts, and climb the fix ladder.** Add agents or routing only
+   when the evidence demands it.
+
+When building on Claude, map each design element to its mechanism (hooks, subagents, skills, MCP,
+structured outputs, batches). Check exact flags and fields against the current docs before writing
+config. For code-level help, suggest companion implementation skills, such as Anthropic's
+`claude-api` or `mcp-builder` skills, if they're available.
 
 ## Field diagnostics: questions worth asking in the meeting
 
@@ -185,6 +214,11 @@ written in documents? Does the action change system state? Can a wrong action be
 is the worst slice? What do humans score today, and what would a rules baseline score? If it's
 wrong, who notices first, and how is it contained?
 
+**Reviewing an agent design:** How does a run end, and what stops it if it doesn't? Which rules
+must hold every time, and are they enforced in code? Why several agents rather than one? What does
+each subagent receive, and what does it return? How does a tool failure look different from an
+empty result? What triggers a handoff to a human, and who staffs that queue?
+
 **Before launch:** If this breaks at 3 a.m. tonight, who is the first person to know? Do they have a
 one-page runbook? When did you last rehearse a rollback, and how long did it take?
 
@@ -208,6 +242,10 @@ it be rolled back? Who answers when it breaks? Any blank answer moves the projec
 | "Decided back then, don't ask why" | Missing decision record | Back-fill an ADR before deciding to keep or change |
 | "Improve efficiency / empower / close the loop" | Positioning not yet thought through | Who, in what situation, achieves what, measured how |
 | "It answered confidently" | Fluency mistaken for groundedness | Require sources; "I don't know" beats confident fiction |
+| "Let's add more agents / a router / a bigger model" | Machinery before diagnosis | Read the transcripts; fix tool descriptions, criteria, context and gates first |
+| "Escalate when the customer is angry or the model's confidence is low" | Signals that don't track complexity | Explicit triggers: user asks for a human, policy gap, no progress |
+| "Have it check its own work" | Self-review rarely overturns itself | An environment check or an independent reviewer instance |
+| "Give it all the tools, just in case" | Selection degrades; least privilege lost | A few role-specific tools; narrow cross-role ones |
 
 ## Style
 
@@ -241,6 +279,16 @@ it be rolled back? Who answers when it breaks? Any blank answer moves the projec
   slice count.
 - `references/ontology-and-guardrails.md`: concepts, relations and constraints; the three-sentence
   concept contract; action allow-lists; the read / suggest / never permission table.
+- `references/agent-architecture.md`: the design order, the agent loop and its exits,
+  hub-and-spoke orchestration and subagent briefs, code gates (hooks, prerequisites, approvals),
+  context engineering, error propagation and escalation, verification, long-running harnesses, the
+  fix ladder for debugging, and an architecture review checklist.
+- `references/tool-design.md`: choosing the tool set, writing tool definitions, results, error
+  contracts, tool choice, structured output and validation-retry, MCP, and testing tools.
+- `references/building-on-claude.md`: choosing the Claude surface, a concept-to-mechanism map
+  (Agent tool, hooks, skills, CLAUDE.md, rules, MCP, structured outputs, batches), Claude Code for
+  teams and CI, common wrong answers, and further learning, including the Claude Certified Architect
+  exam domains.
 - `references/poc.md`: POC vs. demo, the highest-risk assumption, the four POC experiments, failure
   criteria, technical spikes, and the three possible conclusions.
 - `references/evaluation.md`: the four-layer eval matrix, golden sets, eval tiers, tool correctness
@@ -256,7 +304,7 @@ it be rolled back? Who answers when it breaks? Any blank answer moves the projec
 - `references/case-studies.md`: worked cases in manufacturing order fulfillment, maintenance
   knowledge, clinical decision support, customer service, a policy-assistant incident, and contract
   review.
-- `references/pitfalls.md`: 73 pitfalls, each with its symptom, why it kills projects, and the
+- `references/pitfalls.md`: 92 pitfalls, each with its symptom, why it kills projects, and the
   fix.
 - `references/industry-evidence.md`: public research on AI project failure and success, with
   sources, for persuading stakeholders.

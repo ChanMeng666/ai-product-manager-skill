@@ -89,6 +89,8 @@ PM-level controls:
   sees only what the asking user may see.
 - **Guardrails vs. evaluators:** inline guardrails must be fast and deterministic (schema, regex,
   light classifiers). Slow LLM judges run asynchronously.
+- **Act only on complete tool calls,** and don't stream sensitive text to users before the output
+  guardrails have run.
 
 ## 4. Frameworks
 
@@ -135,6 +137,8 @@ Fines for prohibited practices can reach the higher of €35M or 7% of global tu
   employees' and customers' free-text questions, so they're often more sensitive than the business
   data.
 - Define log retention and access. Separate audit logs (keep) from debug logs (short retention).
+- **Memory is personal data with limited authority.** Store what the user asserted, not model
+  guesses; let users see, correct and delete it; a remembered preference never overrides policy.
 - Data minimization in the slice: request only the fields the scenario needs (this also speeds up
   security review).
 - Shadow AI is real. Employees widely use personal chatbots at work. A sanctioned, usable tool is

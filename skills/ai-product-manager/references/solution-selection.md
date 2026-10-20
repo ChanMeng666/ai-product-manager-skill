@@ -56,8 +56,8 @@ Reframe the problem, or put it on the non-goals list
 ```
 
 Ask from left to right. Never choose from right to left. Choosing from the right means you fell in
-love with agents first and then invented reasons to justify one. In practice about 90% of
-requirements are assigned at the first branch.
+love with agents first and then invented reasons to justify one. In practice most requirements
+are settled at the first branch or two (a heuristic from delivery work, not a measured rate).
 
 ## 3. When an agent is justified
 
@@ -74,6 +74,11 @@ distrust of the model. It leaves a way back. The agent runs fast; the human can 
 
 Checklist before building an agent: no deterministic path? needs to decide its next step? action
 changes state? human approval configured? Four yeses, then build. Anything less, go back left.
+
+Quick **agent-washing check** for a proposed "agent": when a tool fails, can it pick a different
+tool or strategy, or only retry? Does the number of steps vary with the input? Does it adapt to what
+it observes rather than run a fixed plan? Mostly "no" means it's a workflow with AI nodes. Call it
+that, and build it that way.
 
 ## 4. Autonomy levels and human-in-the-loop
 
@@ -137,20 +142,28 @@ sources.
 - **Common workflow patterns:**
   - *Prompt chaining:* fixed sequential steps with checks between them.
   - *Routing:* classify the input, then send it to a specialized path. This is also how you keep
-    expensive models for hard cases.
+    expensive models for hard cases. Cap handoffs per session, because routes can loop (A→B→A).
+    Specialists that differ only in prompt, with the same tools, are prompt selection, not routing.
   - *Parallelization:* split independent subtasks (sectioning), or run the same task several times
     and vote.
   - *Orchestrator-workers:* a central LLM breaks the task down dynamically and delegates.
   - *Evaluator-optimizer:* one LLM generates, another critiques against clear criteria, and the
-    loop repeats.
+    loop repeats. Give it a stop rule: cap the rounds, stop when the score stops improving, and
+    ship the best round, not the last.
+  - *Plan-then-execute:* a planner writes the full step list, a human or a check reviews it, and an
+    executor runs it, re-planning only at defined triggers. Fits auditable work where a wrong call
+    is costly.
 - **Single agent before multi-agent.** Split into multiple agents only when one agent's
   instructions or tool set become unmanageable.
 - **Tools are product surface.** Clear names, descriptions and parameters, plus guardrails, matter
   as much as prompts. Treat the agent's tool list as its action space (see
-  `ontology-and-guardrails.md`).
+  `ontology-and-guardrails.md` for what goes on it, and `tool-design.md` for how to write it).
 - **Layered guardrails:** relevance and safety classifiers, PII filtering, tool risk ratings
   (read-only vs. write, reversible vs. irreversible, financial impact), output validation, plus
   human escalation when failure thresholds are exceeded or a high-risk action is requested.
+
+Once a step has passed the agent test, design it with `agent-architecture.md`: the loop and its
+exits, topology, code gates, the context plan, and the error and escalation contract.
 
 ## 7. Cost, latency and model choice
 
@@ -160,6 +173,8 @@ sources.
   production volume? Estimate the cost at **100× demo volume** before committing.
 - Price the extra accuracy against a baseline. If rules reach 88% and the LLM reaches 95%, is the
   extra 7 points worth the inference cost and the new failure modes?
+- Bind models to **roles** in one registry, not at call sites: a primary and a fallback per role,
+  with cost tagged by role. A model swap becomes one edit that goes through the eval gate.
 - Pin model versions in production and re-run evals before switching. A provider's model update is
   a change to your product.
 

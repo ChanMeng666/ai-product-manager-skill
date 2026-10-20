@@ -61,6 +61,46 @@
         "Leads with a sendable message to the CFO before any internal working notes",
         "Considers build-vs-buy or diagnosing usage/cost logs to explain the overrun"
       ]
+    },
+    {
+      "id": 4,
+      "name": "support-agent-architecture",
+      "prompt": "We're building a customer-support agent for our online store on the Claude Agent SDK. It should look up the customer and their orders, handle returns, issue refunds (policy: up to $200 automatic, above that a supervisor must approve), and hand off to a human when needed. Our tech lead proposes 6 agents (triage, identity, orders, refunds, sentiment, QA), each with access to all 22 of our internal API endpoints wrapped as MCP tools. Give me the architecture: agents, tools, guardrails, and how we'll know it works before launch.",
+      "expected_output": "An architecture that challenges the 6-agent topology in favor of the simplest one that works, scopes a small task-shaped tool set per role instead of 22 endpoints everywhere, enforces the refund limit and identity verification in code, defines explicit escalation triggers and a structured handoff, structured tool errors, run budgets, and an eval set with outcome checks plus a bounded rollout.",
+      "files": [],
+      "assertions": [
+        "Challenges the 6-agent design and recommends a single agent (or a minimal topology), splitting only with a stated justification",
+        "Rejects giving all 22 endpoints to every agent; proposes a small, task-shaped, role-scoped tool set",
+        "Enforces the $200 refund limit in code (hook, tool-level check or blocking approval), not only through prompt instructions",
+        "Makes verified customer identity a programmatic prerequisite before order or refund actions",
+        "Defines escalation triggers that include an explicit customer request for a human and policy gaps/exceptions, and does not rely on sentiment or self-reported confidence as the trigger",
+        "Specifies structured tool errors (e.g. category, retryable) and/or distinguishes a failed lookup from an empty result",
+        "Defines a structured handoff summary for the human agent (customer, issue, what was tried, recommendation)",
+        "Proposes an eval set of realistic tasks graded on outcome state (e.g. refund recorded correctly), with a numeric pass threshold, before launch",
+        "Sets per-run budgets or defined exits (max turns, cost, or explicit termination states)",
+        "Proposes a bounded rollout (shadow mode, canary or pilot) rather than a full launch",
+        "Does not expose the skill's internal codes or file names (e.g., pitfall IDs like \"B2\", reference file names, undefined labels like \"L3\") to the user",
+        "Does not present illustrative composite cases as specific real events (only sourced public evidence is cited as fact)"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "multi-agent-research-debug",
+      "prompt": "Our multi-agent research assistant (a coordinator plus 3 subagents: web search, document analysis, report writer), built on the Claude Agent SDK, has three problems. 1) A report on 'the impact of AI on healthcare' only covered diagnostic imaging. 2) When the search subagent times out, the final report silently leaves that area out. 3) The document-analysis subagent sometimes calls the summarize tool when it should call extract_citations; both tools have one-line descriptions. The team wants to add a fourth 'QA agent' and switch everything to the biggest model. My manager asks what we should do this sprint.",
+      "expected_output": "A sprint plan that diagnoses before adding machinery: the coverage gap as the coordinator's too-narrow decomposition, silent omission as missing structured error propagation, tool confusion as a tool-description problem; defers the QA agent and model upgrade until evals show the lower-layer fixes are insufficient, and measures every fix on an eval set.",
+      "files": [],
+      "assertions": [
+        "Diagnoses problem 1 as the coordinator's task decomposition being too narrow (not a subagent failure) and fixes the decomposition or briefs",
+        "For problem 2, proposes structured error propagation from the subagent (failure type, partial results) and a report that flags coverage gaps, rather than silent omission or aborting the whole run",
+        "For problem 3, makes rewriting the tool descriptions (purpose, when to use each, examples) the first fix, before routers, merging tools or model changes",
+        "Pushes back on adding the QA agent and/or the model upgrade before diagnosis, or makes them conditional on evidence after the cheaper fixes",
+        "Calls for reading traces/transcripts to locate which component failed",
+        "Proposes an eval or regression set (e.g. diverse broad topics with coverage checks) and re-running it after each change",
+        "Notes that subagents need explicit, complete context in their briefs (they don't inherit the coordinator's conversation)",
+        "Gives a prioritized, sprint-sized plan with an owner or a single next action",
+        "Does not expose the skill's internal codes or file names (e.g., pitfall IDs like \"B2\", reference file names, undefined labels like \"L3\") to the user",
+        "Does not present illustrative composite cases as specific real events (only sourced public evidence is cited as fact)"
+      ]
     }
   ]
 }

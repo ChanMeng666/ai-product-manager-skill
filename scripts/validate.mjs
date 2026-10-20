@@ -4,6 +4,7 @@
 // - SKILL.md body stays under 500 lines (progressive disclosure)
 // - every `references/*.md` and `templates/*.md` mentioned in SKILL.md exists
 // - every reference/template file on disk is mentioned somewhere in SKILL.md (no orphans)
+// - reference files longer than 100 lines have a `Contents:` line near the top
 // - evals/evals.json parses and every eval has a prompt and assertions
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -43,6 +44,12 @@ for (const sub of ["references", "templates"]) {
     if (!onDisk.includes(f)) fail(`SKILL.md mentions ${sub}/${f}, which does not exist`);
   }
   for (const f of onDisk) if (!mentioned.has(f)) fail(`${sub}/${f} is never mentioned in SKILL.md (orphan)`);
+}
+
+for (const f of readdirSync(join(skillDir, "references")).filter((f) => f.endsWith(".md"))) {
+  const lines = readFileSync(join(skillDir, "references", f), "utf8").replace(/\r\n/g, "\n").split("\n");
+  if (lines.length > 100 && !lines.slice(0, 12).some((l) => l.startsWith("Contents:")))
+    fail(`references/${f}: ${lines.length} lines but no "Contents:" line near the top`);
 }
 
 try {

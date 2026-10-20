@@ -1,5 +1,9 @@
 # Pitfall Catalog
 
+Contents: A) Framing and discovery · B) Solution and scope · C) Ontology, permissions and safety ·
+D) POC and evaluation · E) Lifecycle and decisions · F) Production and operations · G) Agent
+architecture and tools
+
 How to use this: scan the user's plan against each section and report the pitfalls that apply,
 **most expensive first.** For each one, say what you observed, why it kills projects, and the fix.
 The "see" column points to the reference with the full treatment.
@@ -106,3 +110,27 @@ The "see" column points to the reference with the full treatment.
 | F11 | All-or-nothing shutdown | Full stop for a tiered problem | Max cost; "unstable" reputation | Stop by risk tier and channel | production §11 |
 | F12 | Incidents not fed back | Same failure recurs | Lessons lost | Every incident becomes an eval case | production §12 |
 | F13 | No capacity plan | Rollout to everyone at once on a hosted LLM | Rate limits, quotas and latency spike at peak, so the first impression is an outage | Load-test at peak, request quota increases, stage the rollout | production §5 |
+
+## G. Agent architecture and tools
+
+| # | Pitfall | Symptom | Why it kills | Fix | See |
+|---|---|---|---|---|---|
+| G1 | Critical rule only in the prompt | "We told it never to refund over the limit" | Prompts fail at a non-zero rate; each failure is real money or a compliance breach | Enforce in code: hook, prerequisite check or blocking approval | architecture §5 |
+| G2 | Multi-agent by default | Five agents for a task one agent could do | Many times the tokens, more failure points, harder to debug | One agent first; split on evidence | architecture §4 |
+| G3 | Subagents assumed to share context | Subagent redoes work or contradicts earlier findings | Subagents start without the parent's conversation | Complete briefs: findings, constraints, output format, boundaries | architecture §4 |
+| G4 | Blaming the downstream agent | Subagents "fixed" repeatedly; gaps remain | The coordinator decomposed the task too narrowly | Read the trace from the top; fix the first wrong move | architecture §4, §10 |
+| G5 | Vague, overlapping tool descriptions | Agent picks the wrong tool some of the time | Misrouting looks random and gets "fixed" with routers | Rewrite descriptions: purpose, when to use instead of neighbor, formats, example | tools §3 |
+| G6 | Tool sprawl | 15+ tools per agent, one per API endpoint | Selection reliability drops; least privilege lost | A few task-shaped tools per role; namespace; split roles | tools §2 |
+| G7 | Silent or generic errors | "Operation failed", or an empty list on timeout | Agent retries blindly, or tells users "no records" when the system was down | Structured errors: category, retryable, message, partial results | tools §5 |
+| G8 | Stopping on prose or on the cap | Parsing "I'm done"; runs end when the turn limit hits | Unpredictable endings; silent truncation | Stop on the protocol signal; caps are an alerting safety net with a defined exit | architecture §3 |
+| G9 | Sentiment or self-confidence as escalation trigger | Angry-but-simple cases escalated, calm policy gaps kept | Human queue floods while real risks stay with the agent | Explicit triggers: asked for a human, policy gap, no progress | architecture §7 |
+| G10 | Self-review as quality control | "Double-check your answer" in the prompt | The generator rarely overturns its own reasoning | Environment checks; independent reviewer instance | architecture §8 |
+| G11 | Context stuffing | Everything pre-loaded; facts lost in summaries | Attention dilutes; amounts and dates drift | Just-in-time loading, trimmed tool output, a verbatim facts block | architecture §6 |
+| G12 | Retrying for data that isn't there | Validation-retry loop until a required field is filled | Retries invent the missing value | Nullable fields; route missing data to review | tools §7 |
+| G13 | Machinery before diagnosis | Router, classifier or bigger model added after one bad run | Cost and complexity rise; root cause untouched | Read transcripts; climb the fix ladder; re-run evals after each change | architecture §10 |
+| G14 | Blind retry of a write | Timeout on a refund, so the agent calls it again | Duplicate payments, emails or records | Idempotency keys; a write timeout is "unknown" and gets reconciled first | architecture §7 |
+| G15 | Unbound or stale approval | "Approved" covers whatever the agent sends next | The approved action and the executed one differ | Approval bound to exact action and payload, with expiry; recheck at apply time | architecture §5 |
+| G16 | Limits checked per request | Two "add 3" requests pass a max of 4 | The invariant breaks across requests, sessions and channels | Check the resulting state atomically in the system of record | architecture §5 |
+| G17 | Fallback passed off as real output | Canned or demo answers reach users unlabeled | Silent outage; trust collapses when found | Required origin tag on every output; monitor the fallback rate | architecture §7 |
+| G18 | Council by default | Several same-model reviewers debate every output | Multiplied cost; shared blind spots read as agreement | Vote for closed-form answers; diverse, small panels only where error cost justifies it | architecture §8 |
+| G19 | Agent writes to its own ground truth | Agent conclusions added to the eval set or knowledge base | Metrics become self-confirming | Reference data read-only to the agent; human curation only | evaluation §3 |

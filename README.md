@@ -9,11 +9,13 @@
 
 # 🧭 AI Product Manager Skill
 
-### Give any AI agent the judgment of a senior AI product manager, so your LLM, RAG and agent projects survive past the demo
+### Give any AI agent the judgment of a senior AI product manager and agent architect, so your LLM, RAG and agent projects survive past the demo
 
 Turn *"we want an agent"* into a verified problem. Pick rules, workflow, RAG or agent for the right
-reasons. Slice an MVP that actually ships, run POCs that try to fail, build evals that produce
-verdicts, and pass launch gates with a way back.
+reasons. When an agent is justified, design it like production depends on it (one loop with
+clear exits, few well-described tools, rules enforced in code, a deliberate context plan, honest
+errors and real escalation). Slice an MVP that actually ships, run POCs that try to fail, build
+evals that produce verdicts, and pass launch gates with a way back.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 [![Claude Code Skill](https://img.shields.io/badge/Claude%20Code-Skill-green?style=flat-square)](https://docs.anthropic.com/en/docs/claude-code/skills)
@@ -49,6 +51,8 @@ With the skill loaded, your agent stops cheerleading and starts doing what a sea
 | Trust "94% accuracy" | Asks for the denominator, who labeled it, the worst slice and the control group, then grades errors by cost |
 | Say "yes, launch" or "no, wait" | **Keeps the red line and shrinks the scope:** a bounded pilot with exit criteria, rollback rehearsed, and a named 3 a.m. owner |
 | Keep investing "a bit more" | Holds the project to **stop conditions written before the money was spent** |
+| Accept "6 agents, each with all 22 tools" | Starts from **one agent with a few task-shaped tools**, splits only on evidence, and puts refund limits and identity checks **in code (hooks, prerequisites)**, not in the prompt |
+| Fix a flaky agent by adding a QA agent or a bigger model | **Reads the transcripts and climbs the fix ladder:** tool descriptions → explicit criteria → context → code gates → architecture, re-running evals after each change |
 
 Every substantive answer leads with a **verdict**, ranks the **red flags** by cost, fills in a
 **one-page artifact**, and ends with **one next action** and an owner.
@@ -57,7 +61,7 @@ Every substantive answer leads with a **verdict**, ranks the **red flags** by co
 
 ```
 skills/ai-product-manager/
-├── SKILL.md         16 operating principles · stage router · field diagnostics · red-flag phrases
+├── SKILL.md         17 operating principles · stage router · field diagnostics · red-flag phrases
 ├── references/      loaded only when relevant (progressive disclosure)
 └── templates/       one-page artifacts the agent fills in with your specifics
 ```
@@ -69,18 +73,21 @@ skills/ai-product-manager/
 | [`solution-selection`](skills/ai-product-manager/references/solution-selection.md) | Certainty axis · decision tree · when an agent is justified · autonomy levels · HITL · agent patterns · ADRs |
 | [`scoping-and-vertical-slice`](skills/ai-product-manager/references/scoping-and-vertical-slice.md) | Minimum viable *deployment* · coverage vs. depth · 4-layer slice · deferrals with return conditions · exit criteria |
 | [`ontology-and-guardrails`](skills/ai-product-manager/references/ontology-and-guardrails.md) | Concepts/relations/constraints · action allow-lists · "prompts are advice, not gates" |
+| [`agent-architecture`](skills/ai-product-manager/references/agent-architecture.md) | Design order · agent loop and exits · hub-and-spoke subagents and briefs · code gates (hooks, prerequisites) · context engineering · error propagation and escalation · verification · long-running harnesses · the fix ladder · review checklist |
+| [`tool-design`](skills/ai-product-manager/references/tool-design.md) | Choosing the tool set · tool descriptions · results · structured error contracts · `tool_choice` · structured output and validation-retry · MCP · testing tools |
+| [`building-on-claude`](skills/ai-product-manager/references/building-on-claude.md) | API vs. Agent SDK vs. Claude Code · concept-to-mechanism map (Agent tool, hooks, skills, CLAUDE.md, rules, MCP, structured outputs, batches) · Claude Code for teams and CI · common wrong answers · CCA-F domains |
 | [`poc`](skills/ai-product-manager/references/poc.md) | POC vs. demo · highest-risk assumption · the 4 POC experiments · spikes · continue/shrink/stop |
 | [`evaluation`](skills/ai-product-manager/references/evaluation.md) | 4-layer eval matrix · golden sets · error analysis · groundedness · LLM-as-judge · the "95%" traps · eval vs. UAT vs. pilot |
 | [`lifecycle-and-gates`](skills/ai-product-manager/references/lifecycle-and-gates.md) | 7 stages · 4 gates · Demo/POC/Pilot/Production by evidence · sunk cost and stop conditions |
 | [`production-readiness`](skills/ai-product-manager/references/production-readiness.md) | 12-item launch gate · canary · rollback drills · AI-quality SLOs · runbooks · incident triage |
 | [`risk-and-governance`](skills/ai-product-manager/references/risk-and-governance.md) | High-stakes domains · OWASP LLM Top 10 · lethal trifecta · NIST AI RMF · EU AI Act |
 | [`case-studies`](skills/ai-product-manager/references/case-studies.md) | Manufacturing, maintenance, clinical, customer service, a policy-assistant incident, a contract-review rescue |
-| [`pitfalls`](skills/ai-product-manager/references/pitfalls.md) | 73 pitfalls: symptom → why it kills → fix |
+| [`pitfalls`](skills/ai-product-manager/references/pitfalls.md) | 92 pitfalls: symptom → why it kills → fix |
 | [`industry-evidence`](skills/ai-product-manager/references/industry-evidence.md) | RAND, MIT NANDA, Gartner, McKinsey, Anthropic, OpenAI, Google PAIR and more, with sources and caveats |
 
 **Templates:** project charter · discovery report · AI PRD · POC proof plan · eval plan · UAT plan ·
 launch gate checklist · runbook · ADR · ontology and action allow-list · project health check ·
-continue/shrink/stop memo.
+continue/shrink/stop memo · agent design spec · tool spec.
 
 ## Installation
 
@@ -143,13 +150,16 @@ More things to try:
 - "We're launching next week. Run the launch gate checklist on this plan."
 - "Health-check my AI project and tell me the one thing to do next."
 - "I'm a backend engineer moving into AI PM. What should I actually learn?"
+- "Design the architecture for our support agent on the Claude Agent SDK: agents, tools, guardrails, evals."
+- "Our multi-agent research assistant misses whole subtopics and confuses two tools. What do we fix first?"
+- "Set up Claude Code for our team: what goes in CLAUDE.md, rules, skills, hooks and MCP?"
 
 It works in any language. Ask in Chinese, Spanish, Japanese, and so on, and the agent answers in
 that language.
 
 ## Benchmark
 
-Three realistic scenarios were each run with and without the skill (same model), then scored by an
+Realistic scenarios were each run with and without the skill (same model), then scored by an
 independent grader agent against objective assertions:
 
 | Scenario | With skill | Without skill |
@@ -158,6 +168,13 @@ independent grader agent against objective assertions:
 | HR RAG assistant "94% accuracy, launch Monday" go/no-go | **11/11** | 9/11 |
 | Contract-review "POC" rescue memo to the CFO | **12/12** | 10/12 |
 | **Total** | **34/34 (100%)** | 26/34 (76%) |
+
+Agent-architecture scenarios (v0.2.0, blind grading):
+
+| Scenario | With skill | Without skill |
+|---|---|---|
+| Support agent on the Claude Agent SDK: "6 agents, each with all 22 endpoints" | **12/12** | 8/12 |
+| Multi-agent research assistant: missing subtopics, silent timeouts, tool confusion | **10/10** | 7/10 |
 
 Without the skill, a strong model already gives reasonable advice. What the skill adds is
 **structure for judgment**: it reframes the solution as a problem, scopes one slice end to end,
@@ -184,6 +201,7 @@ the tokens. Read the [full benchmark and caveats](evals/benchmark.md), or the
 14. Exchange contracts, not opinions.
 15. Accountability has exactly one name.
 16. Under pressure: keep the red line, shrink the scope.
+17. An agent is a loop, tools and context: diagnose from transcripts, fix at the cheapest layer.
 
 ## Further reading
 
@@ -195,6 +213,21 @@ The skill's guidance is consistent with, and links to, these public sources:
 - [OWASP's Top 10 for LLM Applications](https://genai.owasp.org/llm-top-10/)
 - the [NIST AI RMF](https://www.nist.gov/itl/ai-risk-management-framework)
 - RAND's research on [why AI projects fail](https://www.rand.org/pubs/research_reports/RRA2680-1.html)
+- Anthropic's [*Writing effective tools for agents*](https://www.anthropic.com/engineering/writing-tools-for-agents), [*Effective context engineering for AI agents*](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents), [*How we built our multi-agent research system*](https://www.anthropic.com/engineering/multi-agent-research-system), [*Effective harnesses for long-running agents*](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) and [Claude Code best practices](https://code.claude.com/docs/en/best-practices)
+- the [Claude Certified Architect – Foundations](https://anthropic-partners.skilljar.com/claude-certified-architect-foundations-certification) exam guide, whose five domains (agentic architecture, tool design and MCP, Claude Code configuration, prompt engineering and structured output, context management and reliability) the architecture references cover
+
+## Works well with
+
+This skill decides *what* to build and how to judge it, and gives the architecture. For writing the
+code, pair it with:
+- Anthropic's [`claude-api`](https://github.com/anthropics/skills) and [`mcp-builder`](https://github.com/anthropics/skills) skills, and the [`agent-sdk-dev`, `plugin-dev` and `mcp-server-dev`](https://github.com/anthropics/claude-plugins-official) plugins
+- [DenisSergeevitch/agents-best-practices](https://github.com/DenisSergeevitch/agents-best-practices): a deep, provider-neutral agent-harness skill
+- [muratcankoylan/Agent-Skills-for-Context-Engineering](https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering): context, memory and multi-agent patterns in depth
+- [ooiyeefei/ccc `agentic-system-design`](https://github.com/ooiyeefei/ccc): a Socratic design-doc flow for agent pipelines
+
+Several production-hardening patterns in the architecture references (prepare/commit tools,
+idempotent writes, output-origin tags, review panels and others) were adapted, in our own words,
+from the two MIT-licensed skills above. Thanks to their authors.
 
 Case studies are anonymized composites, and their numbers are illustrative. Regulatory details
 change, so verify them for your jurisdiction.

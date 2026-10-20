@@ -1,5 +1,8 @@
 # Industry Evidence (for persuading stakeholders)
 
+Contents: Why AI projects fail · How leading builders say to build · LLM-as-judge reliability ·
+Security and governance · The forward-deployed engineer (FDE) model · How to use evidence
+
 Use these to show stakeholders that the problems in this skill are common, documented and
 expensive. **Quote carefully:** each claim carries its source and caveats. Check the primary source
 before putting a number in a board deck. Figures were collected in 2026, and the landscape moves
@@ -78,6 +81,72 @@ could be located.
   - human intervention on failure thresholds and high-risk actions.
 
   <https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf>
+- **Anthropic, "Writing effective tools for agents — with agents"** (Sep 2025):
+  - a few thoughtful, task-shaped tools beat wrapping every API endpoint;
+  - namespace tool names;
+  - return high-signal context;
+  - paginate and truncate with sensible defaults;
+  - write actionable error messages;
+  - describe tools as you would to a new hire;
+  - iterate on tools with evals and transcript analysis.
+
+  <https://www.anthropic.com/engineering/writing-tools-for-agents>
+- **Anthropic, "Effective context engineering for AI agents"** (Sep 2025):
+  - context is a finite attention budget, and recall degrades as it fills;
+  - pitch system prompts at the "right altitude";
+  - keep tools minimal and non-overlapping;
+  - retrieve just in time;
+  - for long tasks, use compaction, structured note-taking and sub-agents.
+
+  <https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents>
+- **Anthropic, "How we built our multi-agent research system"** (Jun 2025). A lead agent with
+  parallel subagents outperformed a single agent by 90.2% on Anthropic's internal research eval.
+  Multi-agent runs used about 15× the tokens of a chat. Token usage alone explained about 80% of
+  the performance variance on the BrowseComp benchmark. Detailed subagent briefs and better tool
+  descriptions were key fixes.
+  *Caveat:* these are a vendor's own numbers on its own evals, for breadth-first research tasks.
+  Use them to argue that multi-agent systems are expensive and justified only for high-value,
+  parallelizable work, not as a general accuracy gain.
+  <https://www.anthropic.com/engineering/multi-agent-research-system>
+- **Anthropic, "Effective harnesses for long-running agents"** (Nov 2025):
+  - an initializer step plus incremental sessions;
+  - a structured task list and a progress log;
+  - one feature at a time, verified end to end;
+  - commit after each change.
+
+  <https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents>
+- **Anthropic, "Code execution with MCP"** (Nov 2025). Loading tool definitions on demand and
+  filtering data in a sandbox cut one example workflow from about 150,000 to 2,000 tokens.
+  *Caveat:* this is one illustrative workflow, and the sandbox adds its own operating and security
+  cost. <https://www.anthropic.com/engineering/code-execution-with-mcp>
+- **Anthropic, "Best practices for Claude Code"** (docs). The main recommendations:
+  - give the agent a check it can run;
+  - explore, then plan, then implement;
+  - keep always-loaded instructions short;
+  - remember that hooks are deterministic where instructions are advisory;
+  - review with a separate session.
+
+  <https://code.claude.com/docs/en/best-practices>
+- **Anthropic, Claude Certified Architect – Foundations exam guide** (v1.0, Jul 2026). This is a
+  public competency blueprint for production Claude architecture. Its five domains and weights:
+
+  | Domain | Weight |
+  |---|---|
+  | Agentic architecture and orchestration | 27% |
+  | Claude Code configuration and workflows | 20% |
+  | Prompt engineering and structured output | 20% |
+  | Tool design and MCP integration | 18% |
+  | Context management and reliability | 15% |
+
+  Its scenario answers consistently favor:
+  - code enforcement over prompt instructions for critical rules;
+  - root-cause fixes in tool descriptions over added machinery;
+  - explicit subagent context;
+  - structured error propagation;
+  - explicit escalation criteria over sentiment or self-reported confidence.
+
+  *Caveat:* some product details in the guide (such as the subagent tool's name) already trail the
+  live docs. Partner Academy: <https://anthropic-partners.skilljar.com/claude-certified-architect-foundations-certification>
 - **Google PAIR, People + AI Guidebook:** "often a rule or heuristic-based solution will work just
   as well, if not better." Automate tedious or dangerous tasks; augment tasks people value or are
   responsible for. Weigh false positives against false negatives by real-world cost, and design

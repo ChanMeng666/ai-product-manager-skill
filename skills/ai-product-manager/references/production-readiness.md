@@ -124,6 +124,8 @@ Useful AI production metrics:
 - **Risk:** guardrail trip rate, blocked forbidden-action attempts, PII incidents, injection
   attempts.
 - **Human handoff:** escalation rate, time to human, queue depth.
+- **Output origin:** share of answers served from fallback, cache or partial results. A rising
+  fallback rate is an outage that returns 200 OK.
 
 ## 6. Observability and logging
 
@@ -206,7 +208,9 @@ Change-control rules:
   explicit exit (final answer, error, or budget exhausted).
 - Rate limits per user. Unbounded consumption is a listed LLM security risk.
 - Route easy requests to cheaper models and hard ones to stronger models.
-- Use caching where possible.
+- Use prompt caching with a stable order: fixed instructions and tool definitions first, volatile
+  content last, and no timestamps at the top. Compaction and edits to the start of the prompt
+  invalidate the cache, so compact at deliberate boundaries.
 - Model cost at the run level. Multi-step loops multiply tokens, so falling per-token prices don't
   guarantee falling bills.
 - When inference cost exceeds budget, **shrink scope** before tuning (see `lifecycle-and-gates.md`

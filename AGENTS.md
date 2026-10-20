@@ -52,6 +52,10 @@ scripts/validate.mjs    # repo checks
   caveat. Never add the unverified "IDC 88% of POCs" statistic.
 - Regulations (EU AI Act dates, etc.) change, so keep the "verify before relying" warning in
   `risk-and-governance.md`.
+- `building-on-claude.md` names Claude product mechanisms (tool names, hook events, flags) that
+  change often. Keep the "checked against the docs in <month>" note and the "verify before writing
+  config" warning, and keep vendor-specific detail in that file. `agent-architecture.md` and
+  `tool-design.md` stay vendor-neutral.
 - Case-study numbers are illustrative composites. Don't present them as external statistics.
 - The `description` frontmatter is the skill's trigger. Keep it ≤ 1024 characters and keep it
   specific about *when* to use the skill.

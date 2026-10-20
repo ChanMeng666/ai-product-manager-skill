@@ -1,6 +1,6 @@
 # Benchmark: with vs. without the skill
 
-**Setup:** 3 realistic AI-PM scenarios from [`evals.json`](evals.json). Each prompt ran once with the
+**Setup:** realistic AI-PM and agent-architecture scenarios from [`evals.json`](evals.json). Each prompt ran once with the
 skill loaded and once without (same model, Claude Opus 5.5, as a Claude Code subagent). An
 independent grader agent then scored each answer against objective assertions, with the same
 strictness for both configurations.
@@ -15,6 +15,10 @@ strictness for both configurations.
   - build vs. buy.
 
   The iteration-1 baseline answers were re-graded against the extended list.
+- **Iteration 3 (v0.2.0):** the agent-architecture layer was added (agent architecture, tool design,
+  building on Claude). Two new architecture scenarios ran with and without the skill, and the
+  grader was blind to which answer was which. The three original scenarios were re-run with the
+  skill as a regression check.
 
 ## Results
 
@@ -25,7 +29,52 @@ strictness for both configurations.
 | Contract-review "POC" rescue memo to the CFO | **8/8** | 7/8 | **12/12** | 10/12 |
 | **Total** | **24/24 (100%)** | 17/24 (71%) | **34/34 (100%)** | 26/34 (76%) |
 
-## What the skill changed
+### Iteration 3: agent architecture (v0.2.0)
+
+| Scenario | With skill | Without skill |
+|---|---|---|
+| Support agent on the Claude Agent SDK: "6 agents, each with all 22 endpoints" | **12/12** | 8/12 |
+| Multi-agent research assistant: narrow coverage, silent timeouts, tool confusion; "add a QA agent and the biggest model?" | **10/10** | 7/10 |
+| **Total** | **22/22 (100%)** | 15/22 (68%) |
+
+Regression check with the skill: bank kickoff **11/11**, HR go/no-go **11/11**, contract rescue
+**12/12**. The new references did not dilute the original PM behavior.
+
+**What the architecture layer changed:**
+- **Support agent.** *Without the skill,* the agent already pushed back to one agent with scoped
+  tools and a code-enforced refund cap. But it:
+  - listed "strong frustration detected" as an escalation trigger;
+  - gave no structured error contract, and nothing to tell "no orders" apart from "system down";
+  - left out a recommendation in the handoff;
+  - left budgets as "N turns".
+
+  *With the skill,* it took a decision on each of the six proposed agents, and:
+  - took the customer ID from the verified session rather than from model arguments;
+  - made the $200 limit cumulative, so it can't be split;
+  - added a stop check that blocks "refund issued" claims with no record behind them;
+  - added a model-free test suite that must block 100% of gate bypasses;
+  - set tiered thresholds, signed in advance.
+- **Research debug.** *Without the skill,* the diagnosis was right, but:
+  - it was never confirmed against transcripts;
+  - it didn't say that subagents don't inherit the coordinator's context;
+  - the plan had no owner and no next action.
+
+  *With the skill,* it treated the diagnosis as a hypothesis to confirm in the traces, and:
+  - replaced most of the proposed QA agent with a cheap code gate (each planned subtopic is
+    covered or declared missing);
+  - drafted the tool descriptions;
+  - made "zero silent omissions" a red line in the test set;
+  - ended with a dated next action for a named owner.
+
+**Re-check after absorbing companion-skill patterns** (prepare/commit tools, idempotent writes,
+output-origin tags, review panels and others; see the CHANGELOG). Evals 4 and 5 were re-run with
+the skill only and graded blind: **12/12** and **10/10**, so there was no regression. The support
+answer now also checks the refund cap cumulatively per order inside the refund service, as well as
+in a pre-tool hook, and it removes the SDK's built-in shell and file tools from the agent. The
+grader called it long but dense. Baselines were not re-run, because the change only adds content
+to the skill.
+
+## What the skill changed (iterations 1–2)
 
 - **Bank kickoff.**
   - *Without the skill,* the agent adopted the "end-to-end agent" as the north star and spread phase
@@ -48,9 +97,14 @@ strictness for both configurations.
 
 ## Honest caveats
 
+- In iteration 3 the baseline was already strong on architecture: it rejected the 6-agent design
+  and enforced the refund cap in code without help. The skill's gains are in the details that
+  decide production incidents: escalation signals, error contracts, budgets, verification, and
+  owners.
 - **N = 1 run per configuration per scenario.** Treat this as directional, not statistically robust.
-- With-skill answers are **30–50% longer** and use about **2× the tokens** (≈71–86k vs. ≈37–39k per
-  run), mostly from reading reference files.
+- With-skill answers are **30–50% longer** and use about **2× the tokens**. Per run that is
+  ≈71–86k vs. ≈37–39k in iteration 2, and ≈77–92k vs. ≈42–45k in iteration 3. Most of the extra
+  comes from reading reference files.
 - The baseline model is strong. Without the skill it already gives reasonable advice. The skill's
   gains are in **judgment structure**: reframing the problem, slicing by error cost, writing stop
   conditions, naming owners, and producing sendable artifacts.

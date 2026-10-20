@@ -9,9 +9,20 @@
     {
       "name": "ai-product-manager",
       "source": "./",
-      "description": "Think like a senior AI PM / FDE: turn vague 'we want an agent' requests into verified problems, pick rules vs workflow vs RAG vs agent, slice MVPs, run falsifying POCs, build evals, pass launch gates, and decide continue/shrink/stop.",
+      "description": "Think like a senior AI PM / FDE / agent architect: turn vague 'we want an agent' requests into verified problems, pick rules vs workflow vs RAG vs agent, design the agent (loop, tools, MCP, hooks, context), slice MVPs, run falsifying POCs, build evals, pass launch gates, and decide continue/shrink/stop.",
       "category": "productivity",
-      "tags": ["product-management", "ai-agents", "llm", "rag", "evals", "llmops", "prd", "poc"]
+      "tags": [
+        "product-management",
+        "ai-agents",
+        "llm",
+        "rag",
+        "evals",
+        "llmops",
+        "prd",
+        "poc",
+        "agent-architecture",
+        "mcp"
+      ]
     }
   ]
 }

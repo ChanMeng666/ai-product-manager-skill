@@ -56,6 +56,10 @@ so the standard doesn't drift across a committee. For high-stakes domains, use d
 labeling with a third-party tie-breaker. In the clinical case, two associate chief physicians
 labeled 300 retrospective cases blind, and that set became the yardstick for the whole project.
 
+**Keep the golden set out of the system's reach.** If agent conclusions flow back into the
+knowledge base or eval set they're judged against, the metric becomes self-confirming. Reference
+data is read-only to the agent; new cases arrive through human curation.
+
 Synthetic data is acceptable only to fill coverage gaps. Build it from explicit dimensions
 (intent × persona × difficulty), not free-form generation. It is unreliable in specialized or
 high-stakes domains.
@@ -108,6 +112,12 @@ final message will pass a run that "failed three tool calls and then gracefully 
 For agents, also grade the **outcome state**, not just the agent's claim. "The reservation exists in
 the database" is an outcome. "The agent said it booked" is not.
 
+**Specify forbidden events, not only the expected outcome.** A case passes only if the run also
+didn't skip an approval, write before reading, or retry a send. Add **false-success cases** (the run
+ends one step short of done, and the agent must say so) and requests that span two capabilities.
+Fixtures carry the starting permissions and approval records; a transcript alone can't reproduce a
+decision.
+
 **Groundedness:** does every claim have a source? It is the only cure for fabrication. Users don't
 mind "I don't know"; that wastes ten seconds. They mind confident claims without sources, because
 those lead to wrong decisions.
@@ -156,6 +166,14 @@ signs, who may relax it (or "nobody" for a red line), and what happens on failur
 - Known biases: position bias (prefers the first or second answer), verbosity bias (prefers longer
   answers), and self-preference (rates its own model family higher). Mitigate by swapping order and
   counting a win only if it holds both ways, and by preferring a different model family as judge.
+- Ask for the **critique before the verdict.** Verdict-first invites after-the-fact justification.
+- Strip source cues (model names, telltale formatting) from candidates. A judge never grades
+  candidates it generated.
+- **A judge that picks the best of N is an optimizer.** The system drifts toward whatever the judge
+  likes, so validate it before it selects, and audit a sample of its picks against humans.
+- **Re-check agreement on fresh labels on a schedule,** and retire a judge whose agreement drops.
+  For high-stakes calls, use two judges from different model families and send disagreements to a
+  human.
 - Generic metrics (helpfulness scores, ROUGE, BERTScore) are poor quality measures. At most they help
   you *find* traces worth reading.
 - Don't use slow LLM judges as synchronous guardrails. Inline guardrails should be fast
